@@ -1,15 +1,15 @@
-# import sys
-#
-# from treefy.core.treebuilder import run_cli
-# from treefy.gui.app import run_gui
-#
-#
-# def main():
-#     if "--gui" in sys.argv:
-#         run_gui()
-#     else:
-#         run_cli()
-#
-#
-# if __name__ == "__main__":
-#     main()
+import customtkinter as ctk
+
+from treefy.gui.app import TreefyApp
+
+
+def main():
+    ctk.set_appearance_mode("Dark")
+    ctk.set_default_color_theme("blue")
+
+    app = TreefyApp()
+    app.mainloop()
+
+
+if __name__ == "__main__":
+    main()
