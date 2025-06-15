@@ -1,0 +1,59 @@
+[project]
+name = "treefy"
+version = "0.1.0"
+description = "ASCII project tree viewer with GUI"
+authors = [{ name = "C. Bernard", email = "cfr.bernard@yahoo.com" }]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "rich",
+    "customtkinter",
+    "pathspec"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "mypy",
+    "ruff",
+    "black",
+    "pre-commit"
+]
+
+[project.scripts]
+treefy = "treefy.cli:main"
+treefy-gui = "treefy.gui:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["treefy"]
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+disallow_untyped_defs = false
+show_error_codes = true
+pretty = true
+exclude = "^tests/fixtures/"
+
+[[tool.mypy.overrides]]
+module = ["customtkinter"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.black]
+line-length = 100
+target-version = ['py313']
