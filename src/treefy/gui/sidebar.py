@@ -34,6 +34,16 @@ class Sidebar(ctk.CTkFrame):
         self.depth_label = ctk.CTkLabel(self, text="Depth: 5")
         self.depth_label.pack()
 
+        self.use_gitignore = ctk.BooleanVar(value=False)
+        self.gitignore_checkbox = ctk.CTkCheckBox(
+            self,
+            text="Use .gitignore",
+            variable=self.use_gitignore,
+            command=self._on_gitignore_toggle,
+        )
+        self.gitignore_checkbox.pack(pady=(10, 0))
+        self.gitignore_checkbox.configure(state="disabled")
+
         ctk.CTkButton(self, text="Export", command=lambda: self.command_handler("export")).pack(
             fill="x", pady=(30, 10)
         )
@@ -50,7 +60,20 @@ class Sidebar(ctk.CTkFrame):
         self.depth_label.configure(text=label)
         self.command_handler("depth", internal_depth)
 
+    def _on_gitignore_toggle(self):
+        self.command_handler("gitignore", self.use_gitignore.get())
+
     def import_folder(self):
         path_str = filedialog.askdirectory()
         if path_str:
-            self.command_handler("import", Path(path_str))
+            path = Path(path_str)
+            self.command_handler("import", path)
+
+            if (path / ".gitignore").exists():
+                self.gitignore_checkbox.configure(state="normal")
+                self.use_gitignore.set(True)
+                self._on_gitignore_toggle()
+            else:
+                self.gitignore_checkbox.configure(state="disabled")
+                self.gitignore_checkbox.deselect()
+                self.use_gitignore.set(False)

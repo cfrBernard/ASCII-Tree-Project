@@ -14,7 +14,8 @@ class TreeView(ctk.CTkScrollableFrame):
         )
         self.status_label.pack(pady=20)
 
-    def load_path(self, path: Path):
+    def load_path(self, path: Path, use_gitignore: bool = False):
+        print(f"[TreeView] gitignore={use_gitignore}")
         self.loaded_path = path
         self.status_label.configure(text=f"Imported: {path.name}")
 
