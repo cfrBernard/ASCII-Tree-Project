@@ -1,43 +1,34 @@
-from pathlib import Path
-from tkinter import filedialog, messagebox
-
 import customtkinter as ctk
 
-from treefy.core.ignore import load_ignore_patterns
-from treefy.core.treebuilder import build_tree
+from treefy.gui.sidebar import Sidebar
+from treefy.gui.treeview import TreeView
 
 
 class TreefyApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("Treefy - Project Structure Viewer")
-        self.geometry("300x150")
+        self.title("Treefy - ASCII Project Tree Viewer")
+        self.geometry("1000x700")
+        self.minsize(800, 500)
 
-        self.browse_button = ctk.CTkButton(self, text="Choose a folder", command=self.choose_folder)
-        self.browse_button.pack(pady=20)
+        self.sidebar = Sidebar(self, command_handler=self.handle_command)
+        self.sidebar.pack(side="left", fill="y", padx=10, pady=10)
 
-        self.depth_slider = ctk.CTkSlider(
-            self, from_=1, to=10, number_of_steps=9, command=self.update_depth
-        )
-        self.depth_slider.set(5)
-        self.depth_slider.pack(pady=10)
-        self.depth_value = 5
+        self.treeview = TreeView(self)
+        self.treeview.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
-        self.gitignore_checkbox = ctk.CTkCheckBox(self, text=".gitignore")
-        self.gitignore_checkbox.pack()
+    def handle_command(self, command: str, value=None):
+        # Centralise les actions venant de la sidebar
+        match command:
+            case "import":
+                path = value
+                self.treeview.load_path(path)
 
-    def update_depth(self, value):
-        self.depth_value = int(value)
+            case "depth":
+                self.treeview.set_depth(value)
 
-    def choose_folder(self):
-        folder = filedialog.askdirectory()
-        if not folder:
-            return
+            case "export":
+                self.treeview.export_ascii()
 
-        path = Path(folder)
-        ignore = load_ignore_patterns(path) if self.gitignore_checkbox.get() else None
-        tree = build_tree(path, ignore=ignore, max_depth=self.depth_value)
-
-        out_path = path / "treefy_output.txt"
-        out_path.write_text(str(tree))
-        messagebox.showinfo("Treefy", f"Exported in :\n{out_path}")
+            case _:
+                print(f"Unknown command: {command}")
