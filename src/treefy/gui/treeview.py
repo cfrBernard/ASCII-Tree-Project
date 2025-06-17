@@ -2,6 +2,8 @@ from pathlib import Path
 
 import customtkinter as ctk
 
+from treefy.core.config import save_config
+
 
 class TreeView(ctk.CTkScrollableFrame):
     def __init__(self, master):
@@ -24,4 +26,6 @@ class TreeView(ctk.CTkScrollableFrame):
         print(f"Depth set to {value}")
 
     def export_ascii(self):
+        if self.loaded_path:
+            save_config(self.loaded_path, {"depth": self.depth, "deselected": []})  # placeholder
         print("Export called")

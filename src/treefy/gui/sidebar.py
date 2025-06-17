@@ -42,6 +42,14 @@ class Sidebar(ctk.CTkFrame):
             fill="x", pady=(30, 10)
         )
 
+    def set_depth_slider(self, value: int):
+        if value >= self.slider_max:
+            self.depth_slider.set(self.slider_max)
+            self.depth_label.configure(text="All")
+        else:
+            self.depth_slider.set(value)
+            self.depth_label.configure(text=f"Depth: {value}")
+
     def _on_depth_change(self, val):
         val = int(float(val))
         if val == self.slider_max:

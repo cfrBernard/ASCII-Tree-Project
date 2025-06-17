@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 DEFAULT_TREEFYIGNORE = """
@@ -12,6 +13,28 @@ venv/
 node_modules/
 *.log
 """.strip()
+
+
+def get_config_path(project_root: Path) -> Path:
+    return project_root / ".treefy" / "config.json"
+
+
+def load_config(project_root: Path) -> dict:
+    config_path = get_config_path(project_root)
+    if config_path.exists():
+        try:
+            return json.loads(config_path.read_text())
+        except Exception as e:
+            print(f"[WARN] Failed to load config: {e}")
+    return {"depth": 5, "deselected": []}  # fallback
+
+
+def save_config(project_root: Path, config: dict):
+    config_path = get_config_path(project_root)
+    try:
+        config_path.write_text(json.dumps(config, indent=2))
+    except Exception as e:
+        print(f"[ERROR] Failed to save config: {e}")
 
 
 def init_treefy_folder(project_root: Path) -> Path:
