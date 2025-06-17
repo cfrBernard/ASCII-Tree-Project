@@ -17,26 +17,20 @@ class TreefyApp(ctk.CTk):
         self.treeview = TreeView(self)
         self.treeview.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
-        self.use_gitignore = False
+        self.current_path = None
 
     def handle_command(self, command: str, value=None):
-        # Centralise les actions venant de la sidebar
         match command:
             case "import":
                 self.current_path = value
-                if hasattr(self, "use_gitignore"):
-                    self.treeview.load_path(self.current_path, use_gitignore=self.use_gitignore)
+                self.use_gitignore = (self.current_path / ".gitignore").exists()
+                self.treeview.load_path(self.current_path, use_gitignore=self.use_gitignore)
 
             case "depth":
                 self.treeview.set_depth(value)
 
             case "export":
                 self.treeview.export_ascii()
-
-            case "gitignore":
-                self.use_gitignore = value
-                if hasattr(self, "current_path"):
-                    self.treeview.load_path(self.current_path, use_gitignore=value)
 
             case _:
                 print(f"Unknown command: {command}")

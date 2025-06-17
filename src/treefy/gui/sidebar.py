@@ -34,15 +34,9 @@ class Sidebar(ctk.CTkFrame):
         self.depth_label = ctk.CTkLabel(self, text="Depth: 5")
         self.depth_label.pack()
 
-        self.use_gitignore = ctk.BooleanVar(value=False)
-        self.gitignore_checkbox = ctk.CTkCheckBox(
-            self,
-            text="Use .gitignore",
-            variable=self.use_gitignore,
-            command=self._on_gitignore_toggle,
-        )
-        self.gitignore_checkbox.pack(pady=(10, 0))
-        self.gitignore_checkbox.configure(state="disabled")
+        self.gitignore_used = False
+        self.ignore_footer = ctk.CTkLabel(self, text="Ignore: (none)", font=ctk.CTkFont(size=10))
+        self.ignore_footer.pack(side="bottom", pady=10)
 
         ctk.CTkButton(self, text="Export", command=lambda: self.command_handler("export")).pack(
             fill="x", pady=(30, 10)
@@ -67,13 +61,15 @@ class Sidebar(ctk.CTkFrame):
         path_str = filedialog.askdirectory()
         if path_str:
             path = Path(path_str)
+            self.gitignore_used = (path / ".gitignore").exists()
             self.command_handler("import", path)
 
-            if (path / ".gitignore").exists():
-                self.gitignore_checkbox.configure(state="normal")
-                self.use_gitignore.set(True)
-                self._on_gitignore_toggle()
-            else:
-                self.gitignore_checkbox.configure(state="disabled")
-                self.gitignore_checkbox.deselect()
-                self.use_gitignore.set(False)
+            ignores = []
+            if self.gitignore_used:
+                ignores.append(".gitignore")
+            if (path / ".treefy" / ".treefyignore").exists():
+                ignores.append(".treefyignore")
+
+            self.ignore_footer.configure(
+                text=f"Ignore: {', '.join(ignores) if ignores else '(none)'}"
+            )
