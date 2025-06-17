@@ -23,7 +23,9 @@ def init_treefy_folder(project_root: Path) -> Path:
     if not ignore_file.exists():
         ignore_file.write_text(DEFAULT_TREEFYIGNORE + "\n")
 
+    # handle .gitignore (root & .treefy/)
     ensure_line_in_gitignore(project_root)
+    (treefy_dir / ".gitignore").write_text("# Automatically created by treefy\n*\n")
 
     return ignore_file
 
