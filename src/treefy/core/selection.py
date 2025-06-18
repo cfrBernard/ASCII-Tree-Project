@@ -1,3 +1,5 @@
+# src/treefy/core/selection.py
+
 from pathlib import Path
 from typing import Optional
 
@@ -28,9 +30,7 @@ class Node:
         return hash(self.path)
 
     def __eq__(self, other):
-        if not isinstance(other, Node):
-            return False
-        return self.path == other.path
+        return isinstance(other, Node) and self.path == other.path
 
     def __repr__(self):
         return f"Node({self.path.name})"
@@ -39,51 +39,38 @@ class Node:
 class SelectionManager:
     def __init__(self, root: Node):
         self.root = root
-        self.selected: set[Node] = set()
+        self.excluded: set[Node] = set()  # default = included
 
-    def select(self, node: Node):
+    def include(self, node: Node):
+        self.excluded.discard(node)
         if node.is_dir:
-            self._select_dir(node)
-        else:
-            self._select_file(node)
-        self._select_ancestors(node)
-
-    def deselect(self, node: Node):
-        if node.is_dir:
-            self._deselect_dir(node)
-        else:
-            self._deselect_file(node)
-
-    def toggle(self, node: Node):
-        if node in self.selected:
-            self.deselect(node)
-        else:
-            self.select(node)
-
-    def _select_file(self, node: Node):
-        self.selected.add(node)
-
-    def _select_dir(self, node: Node):
-        self.selected.add(node)
-        for desc in node.iter_descendants():
-            self.selected.add(desc)
-
-    def _select_ancestors(self, node: Node):
+            for desc in node.iter_descendants():
+                self.excluded.discard(desc)
         for ancestor in node.iter_ancestors():
-            if ancestor not in self.selected:
-                self.selected.add(ancestor)
+            self.excluded.discard(ancestor)
 
-    def _deselect_file(self, node: Node):
-        self.selected.discard(node)
-        # remonter et désélection si tous frères désélectionnés
+    def exclude(self, node: Node):
+        self.excluded.add(node)
+        if node.is_dir:
+            for desc in node.iter_descendants():
+                self.excluded.add(desc)
+
+        # if all children are excluded
         parent = node.parent
         while parent:
-            if any(sib in self.selected for sib in parent.children):
+            if any(child not in self.excluded for child in parent.children):
                 break
-            self.selected.discard(parent)
+            self.excluded.add(parent)
             parent = parent.parent
 
-    def _deselect_dir(self, node: Node):
-        self.selected.discard(node)
-        for desc in node.iter_descendants():
-            self.selected.discard(desc)
+    def toggle(self, node: Node):
+        if node in self.excluded:
+            self.include(node)
+        else:
+            self.exclude(node)
+
+    def is_included(self, node: Node) -> bool:
+        return node not in self.excluded
+
+    def get_excluded(self) -> list[Node]:
+        return list(self.excluded)

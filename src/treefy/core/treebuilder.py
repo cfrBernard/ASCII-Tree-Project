@@ -13,10 +13,7 @@ def build_node_tree(
     _parent: Node | None = None,
     _current_depth: int = 0,
 ) -> Node | None:
-    """
-    Crée récursivement un arbre de Node à partir d'un chemin root.
-    ignore les fichiers/dossiers si should_ignore(path) == True
-    """
+
     if should_ignore and should_ignore(root_path):
         return None
     if max_depth != -1 and _current_depth > max_depth:

@@ -78,25 +78,23 @@ class TreeView(ctk.CTkScrollableFrame):
         if not self.selection_manager:
             return
         for node, label in self.label_refs.items():
-            if node in self.selection_manager.selected:
-                label.configure(text_color="gray")
-            else:
+            if self.selection_manager.is_included(node):
                 label.configure(text_color="white")
+            else:
+                label.configure(text_color="gray")
 
     def export_ascii(self):
-        if not self.node_root or not self.loaded_path:
-            return
-        if not self.selection_manager:
+        if not self.node_root or not self.loaded_path or not self.selection_manager:
             return
 
-        selected_paths = [
-            str(node.path.relative_to(self.loaded_path)) for node in self.selection_manager.selected
+        excluded_paths = [
+            str(node.path.relative_to(self.loaded_path)) for node in self.selection_manager.excluded
         ]
         save_config(
             self.loaded_path,
             {
                 "depth": self.depth,
-                "selected": selected_paths,
+                "excluded": excluded_paths,
             },
         )
-        print(f"[EXPORT] {len(selected_paths)} selected lines saved.")
+        print(f"[EXPORT] {len(excluded_paths)} excluded lines saved.")
