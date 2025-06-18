@@ -1,3 +1,5 @@
+# src/treefy/gui/sidebar.py
+
 from pathlib import Path
 from tkinter import filedialog
 

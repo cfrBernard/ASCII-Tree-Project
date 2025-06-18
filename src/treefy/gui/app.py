@@ -1,3 +1,5 @@
+# src/treefy/gui/app.py
+
 import customtkinter as ctk
 
 from treefy.core.config import load_config

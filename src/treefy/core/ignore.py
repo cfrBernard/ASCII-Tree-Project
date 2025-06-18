@@ -1,3 +1,5 @@
+# src/treefy/core/ignore.py
+
 from pathlib import Path
 
 import pathspec
