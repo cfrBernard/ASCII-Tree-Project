@@ -6,7 +6,8 @@ import customtkinter as ctk
 
 from treefy.core.config import save_config
 from treefy.core.ignore import build_ignore_matcher
-from treefy.core.treebuilder import build_tree
+from treefy.core.selection import Node, SelectionManager
+from treefy.core.treebuilder import build_node_tree
 
 
 class TreeView(ctk.CTkScrollableFrame):
@@ -14,9 +15,9 @@ class TreeView(ctk.CTkScrollableFrame):
         super().__init__(master)
         self.loaded_path: Path | None = None
         self.depth = -1
-        self.selected_paths = set()
+        self.node_root: Node | None = None
+        self.selection_manager: SelectionManager | None = None
         self.label_refs = {}
-
         self.status_label = ctk.CTkLabel(
             self, text="No folder imported.", font=ctk.CTkFont(size=16)
         )
@@ -24,14 +25,15 @@ class TreeView(ctk.CTkScrollableFrame):
 
     def set_depth(self, value: int):
         self.depth = value
-        if self.loaded_path:
+        if self.node_root:
             self._render_tree()
 
     def load_path(self, path: Path, use_gitignore: bool = False):
         self.loaded_path = path
         self.status_label.configure(text=f"Imported: {path.name}")
         self.should_ignore = build_ignore_matcher(path, use_gitignore)
-        self.selected_paths.clear()
+        self.node_root = build_node_tree(path, self.should_ignore, self.depth)
+        self.selection_manager = SelectionManager(self.node_root) if self.node_root else None
         self._render_tree()
 
     def _render_tree(self):
@@ -40,12 +42,8 @@ class TreeView(ctk.CTkScrollableFrame):
                 widget.destroy()
         self.label_refs.clear()
 
-        tree = build_tree(self.loaded_path, self.should_ignore, self.depth)
-
-        for _idx, (path, depth) in enumerate(tree):
-            ascii_line = self._format_ascii_line(
-                path.name, depth, is_last=False
-            )  # simplify for now
+        def walk(node: Node, depth: int):
+            ascii_line = self._format_ascii_line(node.path.name, depth)
             label = ctk.CTkLabel(
                 self,
                 text=ascii_line,
@@ -55,32 +53,50 @@ class TreeView(ctk.CTkScrollableFrame):
                 corner_radius=0,
             )
             label.pack(fill="x", padx=10, pady=0, ipady=0)
+            label.bind("<Button-1>", lambda e, n=node, lbl=label: self._toggle_selection(n, lbl))
+            self.label_refs[node] = label
 
-            label.bind("<Button-1>", lambda e, p=path, lbl=label: self._toggle_selection(p, lbl))
-            self.label_refs[path] = label
+            for child in node.children:
+                walk(child, depth + 1)
 
-    def _format_ascii_line(self, name: str, depth: int, is_last: bool = False) -> str:
+        if self.node_root:
+            walk(self.node_root, 0)
+
+        self._update_labels_color()
+
+    def _format_ascii_line(self, name: str, depth: int) -> str:
         indent = "│   " * (depth - 1) + ("├── " if depth > 0 else "")
         return indent + name
 
-    def _toggle_selection(self, path: Path, label: ctk.CTkLabel):
-        if path in self.selected_paths:
-            self.selected_paths.remove(path)
-            label.configure(text_color="default")
-        else:
-            self.selected_paths.add(path)
-            label.configure(text_color="gray")
+    def _toggle_selection(self, node: Node, label: ctk.CTkLabel):
+        if not self.selection_manager:
+            return
+        self.selection_manager.toggle(node)
+        self._update_labels_color()
+
+    def _update_labels_color(self):
+        if not self.selection_manager:
+            return
+        for node, label in self.label_refs.items():
+            if node in self.selection_manager.selected:
+                label.configure(text_color="gray")
+            else:
+                label.configure(text_color="white")
 
     def export_ascii(self):
-        # placeholder – export pas encore implémenté
-        if self.loaded_path:
-            save_config(
-                self.loaded_path,
-                {
-                    "depth": self.depth,
-                    "deselected": [
-                        str(p.relative_to(self.loaded_path)) for p in self.selected_paths
-                    ],
-                },
-            )
-            print(f"[EXPORT] {len(self.selected_paths)} deselected lines saved.")
+        if not self.node_root or not self.loaded_path:
+            return
+        if not self.selection_manager:
+            return
+
+        selected_paths = [
+            str(node.path.relative_to(self.loaded_path)) for node in self.selection_manager.selected
+        ]
+        save_config(
+            self.loaded_path,
+            {
+                "depth": self.depth,
+                "selected": selected_paths,
+            },
+        )
+        print(f"[EXPORT] {len(selected_paths)} selected lines saved.")

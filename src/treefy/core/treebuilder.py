@@ -3,19 +3,35 @@
 from collections.abc import Callable
 from pathlib import Path
 
+from treefy.core.selection import Node
 
-def build_tree(root: Path, should_ignore: Callable[[Path], bool], max_depth: int = -1):
-    tree = []
 
-    def recurse(path: Path, depth: int):
-        if max_depth != -1 and depth > max_depth:
-            return
-        if should_ignore(path):
-            return  # Ignore du dossier/fichier
-        tree.append((path, depth))
-        if path.is_dir():
-            for child in sorted(path.iterdir()):
-                recurse(child, depth + 1)
+def build_node_tree(
+    root_path: Path,
+    should_ignore: Callable[[Path], bool] | None = None,
+    max_depth: int = -1,
+    _parent: Node | None = None,
+    _current_depth: int = 0,
+) -> Node | None:
+    """
+    Crée récursivement un arbre de Node à partir d'un chemin root.
+    ignore les fichiers/dossiers si should_ignore(path) == True
+    """
+    if should_ignore and should_ignore(root_path):
+        return None
+    if max_depth != -1 and _current_depth > max_depth:
+        return None
 
-    recurse(root, 0)
-    return tree
+    node = Node(root_path, _parent)
+    if node.is_dir:
+        try:
+            children_paths = sorted(root_path.iterdir())
+        except PermissionError:
+            children_paths = []
+        for child_path in children_paths:
+            child_node = build_node_tree(
+                child_path, should_ignore, max_depth, node, _current_depth + 1
+            )
+            if child_node:
+                node.add_child(child_node)
+    return node
