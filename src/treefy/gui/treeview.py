@@ -4,7 +4,7 @@ from pathlib import Path
 
 import customtkinter as ctk
 
-from treefy.core.config import save_config
+from treefy.core.config import load_config, save_config
 from treefy.core.ignore import build_ignore_matcher
 from treefy.core.selection import Node, SelectionManager
 from treefy.core.treebuilder import build_node_tree
@@ -31,9 +31,21 @@ class TreeView(ctk.CTkScrollableFrame):
     def load_path(self, path: Path, use_gitignore: bool = False):
         self.loaded_path = path
         self.status_label.configure(text=f"Imported: {path.name}")
+
         self.should_ignore = build_ignore_matcher(path, use_gitignore)
         self.node_root = build_node_tree(path, self.should_ignore, self.depth)
         self.selection_manager = SelectionManager(self.node_root) if self.node_root else None
+
+        # Load config and apply excluded nodes
+        config = load_config(path)
+        excluded_relpaths = config.get("excluded", [])
+        if self.selection_manager and self.node_root:
+            for relpath in excluded_relpaths:
+                abs_path = path / relpath
+                node = self._find_node_by_path(self.node_root, abs_path)
+                if node:
+                    self.selection_manager.exclude(node)
+
         self._render_tree()
 
     def _render_tree(self):
@@ -82,6 +94,15 @@ class TreeView(ctk.CTkScrollableFrame):
                 label.configure(text_color="white")
             else:
                 label.configure(text_color="gray")
+
+    def _find_node_by_path(self, node: Node, target_path: Path) -> Node | None:
+        if node.path == target_path:
+            return node
+        for child in node.children:
+            found = self._find_node_by_path(child, target_path)
+            if found:
+                return found
+        return None
 
     def export_ascii(self):
         if not self.node_root or not self.loaded_path or not self.selection_manager:
