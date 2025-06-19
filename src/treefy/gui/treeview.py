@@ -54,17 +54,17 @@ class TreeView(ctk.CTkScrollableFrame):
                 widget.destroy()
         self.label_refs.clear()
 
-        def walk(node: Node, depth: int):
-            ascii_line = self._format_ascii_line(node.path.name, depth)
+        def walk(node: Node, prefix_parts: list[bool]):
+            ascii_line = self._format_ascii_line(node.path.name, prefix_parts)
             label = ctk.CTkLabel(
                 self,
                 text=ascii_line,
                 anchor="w",
-                font=ctk.CTkFont(family="Courier New", size=16),
+                font=ctk.CTkFont(family="Courier New", size=14),
                 height=1,
                 corner_radius=0,
             )
-            label.pack(fill="x", padx=10, pady=0, ipady=0)
+            label.pack(fill="x", padx=10, pady=1, ipady=0)
 
             def on_enter(e):
                 label.configure(cursor="hand2", bg_color="#3F3F3F")
@@ -74,21 +74,26 @@ class TreeView(ctk.CTkScrollableFrame):
 
             label.bind("<Enter>", on_enter)
             label.bind("<Leave>", on_leave)
-
             label.bind("<Button-1>", lambda e, n=node, lbl=label: self._toggle_selection(n, lbl))
             self.label_refs[node] = label
 
-            for child in node.children:
-                walk(child, depth + 1)
+            child_count = len(node.children)
+            for idx, child in enumerate(node.children):
+                walk(child, prefix_parts + [idx == child_count - 1])
 
         if self.node_root:
-            walk(self.node_root, 0)
+            walk(self.node_root, [])
 
         self._update_labels_color()
 
-    def _format_ascii_line(self, name: str, depth: int) -> str:
-        indent = "│   " * (depth - 1) + ("├── " if depth > 0 else "")
-        return indent + name
+    def _format_ascii_line(self, name: str, prefix_parts: list[bool]) -> str:
+        parts = []
+        for is_last_level in prefix_parts[:-1]:
+            parts.append("    " if is_last_level else "│   ")
+        if prefix_parts:
+            is_last = prefix_parts[-1]
+            parts.append("└── " if is_last else "├── ")
+        return "".join(parts) + name
 
     def _toggle_selection(self, node: Node, label: ctk.CTkLabel):
         if not self.selection_manager:
