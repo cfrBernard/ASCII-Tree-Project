@@ -65,6 +65,16 @@ class TreeView(ctk.CTkScrollableFrame):
                 corner_radius=0,
             )
             label.pack(fill="x", padx=10, pady=0, ipady=0)
+
+            def on_enter(e):
+                label.configure(cursor="hand2", bg_color="#3F3F3F")
+
+            def on_leave(e):
+                label.configure(cursor="", bg_color="transparent")
+
+            label.bind("<Enter>", on_enter)
+            label.bind("<Leave>", on_leave)
+
             label.bind("<Button-1>", lambda e, n=node, lbl=label: self._toggle_selection(n, lbl))
             self.label_refs[node] = label
 
