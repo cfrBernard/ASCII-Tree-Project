@@ -13,6 +13,7 @@ class Sidebar(ctk.CTkFrame):
 
         self.slider_max = 11  # 0..10 + 1 = All
         self.real_max_depth = 20  # Hard cap
+        self._last_depth = None
         self.init_ui()
 
     def init_ui(self):
@@ -27,7 +28,7 @@ class Sidebar(ctk.CTkFrame):
             self,
             from_=0,
             to=self.slider_max,
-            number_of_steps=self.slider_max + 1,
+            number_of_steps=self.slider_max,
             variable=self.depth_var,
             command=self._on_depth_change,
         )
@@ -54,6 +55,12 @@ class Sidebar(ctk.CTkFrame):
 
     def _on_depth_change(self, val):
         val = int(float(val))
+
+        if val == self._last_depth:
+            return  # avoid unnecessary refresh
+
+        self._last_depth = val
+
         if val == self.slider_max:
             label = "All"
             internal_depth = self.real_max_depth
