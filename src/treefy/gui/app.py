@@ -2,7 +2,7 @@
 
 import customtkinter as ctk
 
-from treefy.core.config import load_config
+from treefy.core.config import init_treefy_folder, load_config
 from treefy.gui.sidebar import Sidebar
 from treefy.gui.treeview import TreeView
 
@@ -29,8 +29,10 @@ class TreefyApp(ctk.CTk):
                 self.use_gitignore = (self.current_path / ".gitignore").exists()
                 self.treeview.load_path(self.current_path, use_gitignore=self.use_gitignore)
 
-                # Load config
+                # Init + Load config
+                init_treefy_folder(self.current_path)
                 config = load_config(self.current_path)
+
                 depth = config.get("depth", 5)
                 self.treeview.set_depth(depth)
                 self.sidebar.set_depth_slider(depth)
