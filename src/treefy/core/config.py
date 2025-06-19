@@ -37,7 +37,7 @@ def ensure_line_in_gitignore(root: Path, line: str = ".treefy/"):
             with gitignore.open("a") as f:
                 f.write(f"\n{comment}\n{line}\n")
     else:
-        gitignore.write_text(f"{comment}\n{line}\n")
+        pass
 
 
 def init_treefy_folder(project_root: Path) -> None:
