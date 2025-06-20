@@ -1,5 +1,6 @@
 # src/treefy/gui/treeview.py
 
+import tkinter.filedialog as filedialog
 from pathlib import Path
 
 import customtkinter as ctk
@@ -9,7 +10,7 @@ from treefy.core.exporter import export_ascii_config
 from treefy.core.ignore import build_ignore_matcher
 from treefy.core.selection import Node, SelectionManager
 from treefy.core.treebuilder import build_node_tree
-from treefy.core.utils import find_node_by_path, format_ascii_line
+from treefy.core.utils import find_node_by_path, format_ascii_line, generate_ascii_tree
 
 
 class TreeView(ctk.CTkScrollableFrame):
@@ -60,7 +61,8 @@ class TreeView(ctk.CTkScrollableFrame):
         self.label_refs.clear()
 
         def walk(node: Node, prefix_parts: list[bool]):
-            ascii_line = format_ascii_line(node.path.name, prefix_parts)
+            name = node.path.name + "/" if node.is_dir else node.path.name
+            ascii_line = format_ascii_line(name, prefix_parts)
             label = ctk.CTkLabel(
                 self,
                 text=ascii_line,
@@ -109,4 +111,25 @@ class TreeView(ctk.CTkScrollableFrame):
     def export_ascii(self):
         if not self.node_root or not self.loaded_path or not self.selection_manager:
             return
+
+        # exports the config and generates the tree/file
         export_ascii_config(self.node_root, self.selection_manager, self.depth, self.loaded_path)
+        ascii_output = generate_ascii_tree(self.node_root, self.selection_manager)
+
+        filepath = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
+            initialfile=f"{self.loaded_path.name}.txt",
+            title="Export ASCII tree",
+        )
+
+        if not filepath:
+            print("[EXPORT] Export canceled.")
+            return
+
+        try:
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(ascii_output)
+            print(f"[EXPORT] Exported ASCII tree in {filepath}")
+        except Exception as e:
+            print(f"[EXPORT] Export failed : {e}")
