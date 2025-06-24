@@ -2,7 +2,7 @@
 
 **Treefy** is a simple, intuitive Python app designed to visualize and export your project's folder structure in a clean, editable ASCII tree format. Ideal for documentation, codebase audits, or just getting a quick overview of a directory.
 
-[**Download the latest release here**](https://github.com/cfrBernard/Treefy/releases)
+[**Download the latest release here**](https://github.com/cfrBernard/ASCII-Tree-Project/releases)
 
 ![Version](https://img.shields.io/badge/version-v0.1.0-blue)
 ![License](https://img.shields.io/github/license/cfrBernard/ASCII-Tree-Project)
@@ -135,3 +135,4 @@ ASCII-Tree-Project/
 
 ## 🤝 Contact:
 For issues, suggestions, or contributions, feel free to open an issue on the GitHub repository.
+> made with 💚 during dungeon queues
