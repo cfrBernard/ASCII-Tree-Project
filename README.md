@@ -1,4 +1,4 @@
-# Treefy 🌲
+# Treefy – Project Tree Viewer
 
 **Treefy** is a simple, intuitive Python app designed to visualize and export your project's folder structure in a clean, editable ASCII tree format. Ideal for documentation, codebase audits, or just getting a quick overview of a directory.
 
@@ -34,6 +34,8 @@
 ```
 git clone https://github.com/yourusername/Treefy.git
 cd Treefy
+```
+```
 pip install -e .
 # or
 pip install -e .[dev]
@@ -43,7 +45,7 @@ pip install -e .[dev]
 
 ---
 
-## Dev Tools:
+## Dev Tools
 
 
 ### Run the App:
@@ -78,7 +80,7 @@ Launch the app from the release executable or run it directly:
 python -m treefy
 ```
 
-- Select your root directory in the UI.
+- Import your root directory in the UI.
 - Use the main view to select/deselect files or directories.
 - Adjust depth to control how deep the tree goes.
 - Export to .txt when you're ready.
@@ -88,8 +90,6 @@ python -m treefy
 ---
 
 ## 📁 Example Tree Output
-
-### Here's an example of a generated tree:
 
 ```
 ASCII-Tree-Project/
@@ -125,9 +125,11 @@ ASCII-Tree-Project/
     └── test_selection.py
 ```
 
+> Here's an example of a generated tree
+
 ---
 
-## 🔮 What's Coming Next 
+## 🔮 What's Coming: 
 
 - More export formats: (JSON, Markdown, HTML).
 - Improved UI/UX: Better tree manipulation and styling for v1.0.
@@ -135,4 +137,7 @@ ASCII-Tree-Project/
 
 ## 🤝 Contact:
 For issues, suggestions, or contributions, feel free to open an issue on the GitHub repository.
-> made with 💚 during dungeon queues
+
+---
+> Made with 💚 during dungeon queues – This project is licensed under the MIT [LICENSE](./LICENSE.md).
+
