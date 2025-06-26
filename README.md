@@ -32,7 +32,7 @@
 ### Installation (Dev Mode):
 
 ```
-git clone https://github.com/yourusername/Treefy.git
+git clone https://github.com/cfrBernard/Treefy.git
 cd Treefy
 ```
 ```
