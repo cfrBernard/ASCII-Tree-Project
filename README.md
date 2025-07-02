@@ -4,7 +4,7 @@
 
 [**Download the latest release here**](https://github.com/cfrBernard/ASCII-Tree-Project/releases)
 
-![Version](https://img.shields.io/badge/version-v0.1.1-blue)
+![Version](https://img.shields.io/badge/version-v0.2.0-blue)
 ![License](https://img.shields.io/github/license/cfrBernard/ASCII-Tree-Project)
 
 ## Features:
@@ -19,7 +19,7 @@
 ---
 
 <p align="center">
-  <img src="assets/demo/treefy_v0.1.1_szW2M6zLZK.png" alt="v0.1.1 Treefy Demo" />
+  <img src="assets/demo/treefy_v0.2.0_PN1mhcP62F.png" alt="v0.2.0 Treefy Demo" />
 </p>
 
 ---
