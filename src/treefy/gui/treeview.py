@@ -9,6 +9,7 @@ from treefy.core.config import load_config
 from treefy.core.exporter import export_ascii_config
 from treefy.core.ignore import build_ignore_matcher
 from treefy.core.selection import Node, SelectionManager
+from treefy.core.stats import get_tree_stats
 from treefy.core.treebuilder import build_node_tree
 from treefy.core.utils import find_node_by_path, format_ascii_line, generate_ascii_tree
 
@@ -25,6 +26,7 @@ class TreeView(ctk.CTkScrollableFrame):
             self, text="No folder imported.", font=ctk.CTkFont(size=16)
         )
         self.status_label.pack(pady=20)
+        self.on_stats_update = None
 
     def load_path(self, path: Path, use_gitignore: bool = False):
         self.loaded_path = path
@@ -53,6 +55,14 @@ class TreeView(ctk.CTkScrollableFrame):
                 node = find_node_by_path(self.node_root, abs_path)
                 if node:
                     self.selection_manager.exclude(node)
+
+        # callback with stats
+        if self.on_stats_update and self.node_root and self.selection_manager:
+            stats = get_tree_stats(
+                self.node_root,
+                self.selection_manager,
+            )
+            self.on_stats_update(stats)
 
     def _render_tree(self):
         for widget in self.winfo_children():

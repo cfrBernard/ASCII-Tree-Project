@@ -11,7 +11,7 @@ class TreefyApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Treefy - ASCII Project Tree Viewer")
-        self.geometry("1000x700")
+        self.geometry("800x500")
         self.minsize(800, 500)
 
         self.sidebar = Sidebar(self, command_handler=self.handle_command)
@@ -19,6 +19,8 @@ class TreefyApp(ctk.CTk):
 
         self.treeview = TreeView(self)
         self.treeview.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+
+        self.treeview.on_stats_update = self.sidebar.stats_panel.update_stats
 
         self.current_path = None
 
@@ -40,7 +42,7 @@ class TreefyApp(ctk.CTk):
             case "depth":
                 self.treeview.set_depth(value)
 
-            case "export":
+            case "export_as":
                 self.treeview.export_ascii()
 
             case _:
