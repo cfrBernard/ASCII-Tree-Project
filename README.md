@@ -129,7 +129,7 @@ ASCII-Tree-Project/
 
 ---
 
-## 🔮 What's Coming: 
+## 🔮 What's Coming:
 
 - More export formats: (JSON, Markdown, HTML).
 - Improved UI/UX: Better tree manipulation and styling for v1.0.
@@ -140,4 +140,3 @@ For issues, suggestions, or contributions, feel free to open an issue on the Git
 
 ---
 > Made with 💚 during dungeon queues – This project is licensed under the MIT [LICENSE](./LICENSE.md).
-
