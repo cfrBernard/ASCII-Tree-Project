@@ -23,14 +23,18 @@ class TreeView(ctk.CTkScrollableFrame):
         self.selection_manager: SelectionManager | None = None
         self.label_refs = {}
         self.status_label = ctk.CTkLabel(
-            self, text="No folder imported.", font=ctk.CTkFont(size=16)
+            self,
+            text="No folder imported.",
+            font=ctk.CTkFont(size=16),
+            anchor="center",
+            justify="center",
         )
-        self.status_label.pack(pady=20)
+        self.status_label.pack(pady=215, expand=True, fill="both")
         self.on_stats_update = None
 
     def load_path(self, path: Path, use_gitignore: bool = False):
         self.loaded_path = path
-        self.status_label.configure(text=f"Imported: {path.name}")
+        self.status_label.destroy()
         self.should_ignore = build_ignore_matcher(path, use_gitignore)
 
         self._rebuild_tree()

@@ -1,6 +1,6 @@
 [project]
 name = "treefy"
-version = "0.2.0"
+version = "0.2.1"
 description = "ASCII project tree viewer with GUI"
 authors = [{ name = "C. Bernard", email = "cfr.bernard@yahoo.com" }]
 license = "MIT"
