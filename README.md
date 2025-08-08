@@ -4,8 +4,8 @@
 
 [**Download the latest release here**](https://github.com/cfrBernard/ASCII-Tree-Project/releases)
 
-![Version](https://img.shields.io/badge/version-v0.2.1-blue)
-![License](https://img.shields.io/github/license/cfrBernard/ASCII-Tree-Project)
+[![Version](https://img.shields.io/badge/version-v0.2.1-blue)](https://github.com/cfrBernard/ASCII-Tree-Project/releases)
+[![License](https://img.shields.io/github/license/cfrBernard/ASCII-Tree-Project)](./LICENSE.md)
 
 ## Features:
 
