@@ -32,8 +32,8 @@
 ### Installation (Dev Mode):
 
 ```
-git clone https://github.com/cfrBernard/Treefy.git
-cd Treefy
+git clone https://github.com/cfrBernard/ASCII-Tree-Project.git
+cd ASCII-Tree-Project
 ```
 ```
 pip install -e .
